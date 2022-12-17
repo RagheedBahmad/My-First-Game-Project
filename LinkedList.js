@@ -132,7 +132,6 @@ class LinkedList {
         return -1;
     }
 
-
     // finds the index of element
     indexOf(element) {
         var count = 0;
