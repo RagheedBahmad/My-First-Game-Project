@@ -2,12 +2,30 @@ const canvas = document.getElementById("canvas");
 
 const ctx = canvas.getContext("2d");
 
+console.log(collisions);
 
 canvas.width = 1024;
 canvas.height = 576;
 
-ctx.fillStyle = "white";
-ctx.fillRect(0, 0, canvas.width, canvas.height);
+const collisionsMap = [];
+for(let i = 0; i < collisions.length; i += 160) {
+    collisionsMap.push(collisions.slice(i, i + 160))
+}
+
+const boundaries = []
+collisionsMap.forEach((row, i) => {
+    row.forEach((symbol, j) => {
+        if (symbol !== 0) {
+            boundaries.push(new Boundary({
+                position: {
+                    x: j * Boundary.width,
+                    y: i * Boundary.height
+                }
+            }))
+        }
+    })
+})
+console.log(boundaries)
 
 const image = new Image();
 image.src = "Assets/Map/Pokemon World Map.png";
@@ -15,15 +33,7 @@ image.src = "Assets/Map/Pokemon World Map.png";
 const playerImage = new Image();
 playerImage.src = "Assets/Player/FemalePlayer/runDOWN.png"
 
-const background = new Sprite({position: {x: -720, y: -4000}, image: image});
-
-Array.prototype.peek = function () {
-    if (this.length === 0) {
-        throw new Error("out of bounds");
-    }
-    return this[this.length - 1];
-}
-
+const background = new Sprite({position: {x: -720, y: -3930}, image: image});
 
 let keys = new LinkedList();
 
