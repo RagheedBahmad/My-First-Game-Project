@@ -12,7 +12,7 @@ for(let i = 0; i < collisions.length; i += 160) {
 
 const offset = {
     x: -720,
-    y: -3930
+    y: -3935
 }
 
 
@@ -54,12 +54,14 @@ let keys = new LinkedList();
 
 function rectangularCollision({rectangle1, rectangle2}) {
     return (
-        rectangle1.position.x + rectangle1.width >= rectangle2.position.x &&
-        rectangle1.position.x <= rectangle2.position.x + rectangle2.width &&
-        rectangle1.position.y + rectangle1.height / 2 <= rectangle2.position.y + rectangle2.height &&
+        rectangle1.position.x + rectangle1.width * 0.8>= rectangle2.position.x &&
+        rectangle1.position.x + rectangle1.width * 0.2<= rectangle2.position.x + rectangle2.width &&
+        rectangle1.position.y + rectangle1.height *0.6 <= rectangle2.position.y + rectangle2.height &&
         rectangle1.position.y + rectangle1.height >= rectangle2.position.y
     );
 }
+
+
 
 
 function animate() {
@@ -73,21 +75,94 @@ function animate() {
     })
     player.draw();
 
+    let moving = true;
     switch(keys.peek()) {
-        case 'w' : movables.forEach((movable) => {
-            movable.position.y += 3;
+        case 'w' :
+            for(let i = 0; i < boundaries.length; i++) {
+                const boundary = boundaries[i];
+                if(rectangularCollision({
+                    rectangle1: player,
+                    rectangle2 :{
+                        ...boundary,
+                        position: {
+                            x: boundary.position.x,
+                            y: boundary.position.y + 3
+                        }
+                    }
+                })) {
+                    moving = false;
+                    break;
+                }
+                    }
+            if(moving)
+                movables.forEach((movable) => {
+                movable.position.y += 3;
         })
         break;
-        case 'a' : movables.forEach((movable) => {
-            movable.position.x += 3;
+        case 'a' :
+            for(let i = 0; i < boundaries.length; i++) {
+                const boundary = boundaries[i];
+                if(rectangularCollision({
+                    rectangle1: player,
+                    rectangle2 :{
+                        ...boundary,
+                        position: {
+                            x: boundary.position.x + 3,
+                            y: boundary.position.y
+                        }
+                    }
+                })) {
+                    moving = false;
+                    break;
+                }
+            }
+            if(moving)
+                movables.forEach((movable) => {
+                movable.position.x += 3;
         })
         break;
-        case 's' : movables.forEach((movable) => {
-            movable.position.y -= 3;
+        case 's' :
+            for(let i = 0; i < boundaries.length; i++) {
+                const boundary = boundaries[i];
+                if(rectangularCollision({
+                    rectangle1: player,
+                    rectangle2 :{
+                        ...boundary,
+                        position: {
+                            x: boundary.position.x,
+                            y: boundary.position.y - 3
+                        }
+                    }
+                })) {
+                    moving = false;
+                    break;
+                }
+            }
+            if(moving)
+                movables.forEach((movable) => {
+                movable.position.y -= 3;
         })
         break;
-        case 'd' : movables.forEach((movable) => {
-            movable.position.x -= 3;
+        case 'd' :
+            for(let i = 0; i < boundaries.length; i++) {
+                const boundary = boundaries[i];
+                if(rectangularCollision({
+                    rectangle1: player,
+                    rectangle2 :{
+                        ...boundary,
+                        position: {
+                            x: boundary.position.x - 3,
+                            y: boundary.position.y
+                        }
+                    }
+                })) {
+                    moving = false;
+                    break;
+                }
+            }
+            if(moving)
+                movables.forEach((movable) => {
+                movable.position.x -= 3;
         })
         break
     } // Player Movement and Speed
