@@ -24,22 +24,7 @@ Array.prototype.peek = function () {
     return this[this.length - 1];
 }
 
-// const keys = {
-//     w: {
-//         pressed: false
-//     },
-//     a: {
-//         pressed: false
-//     },
-//     s: {
-//         pressed: false
-//     },
-//     d: {
-//         pressed: false
-//     }
-// }
 
-// const keys = [];
 let keys = new LinkedList();
 
 function animate() {
@@ -57,10 +42,6 @@ function animate() {
         playerImage.height,
         );
 
-    // if (keys.peek() === 'w') background.position.y += 3;
-    // if (keys.peek() === 'a') background.position.x += 3;
-    // if (keys.peek() === 's') background.position.y -= 3;
-    // if (keys.peek() === 'd') background.position.x -= 3;
     switch(keys.peek()) {
         case 'w' : background.position.y += 3;
         break;
