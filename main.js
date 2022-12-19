@@ -3,7 +3,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 canvas.width = 1024;
-canvas.height = 576;
+canvas.height = 578;
 
 const collisionsMap = [];
 for(let i = 0; i < collisions.length; i += 160) {
@@ -12,7 +12,7 @@ for(let i = 0; i < collisions.length; i += 160) {
 
 const offset = {
     x: -720,
-    y: -3935
+    y: -3960
 }
 
 
@@ -33,36 +33,49 @@ collisionsMap.forEach((row, i) => {
 const image = new Image();
 image.src = "Assets/Map/Pokemon World Map.png"; // Pokemon Map
 
-const playerImage = new Image();
-playerImage.src = "Assets/Player/FemalePlayer/runDOWN.png" // Player Image
+const playerDownImage = new Image();
+playerDownImage.src = "Assets/Player/FemalePlayer/runDOWN.png" // Player Image
+const playerUpImage = new Image();
+playerUpImage.src = "Assets/Player/FemalePlayer/runUP.png" // Player Image
+const playerLeftImage = new Image();
+playerLeftImage.src = "Assets/Player/FemalePlayer/runLEFT.png" // Player Image
+const playerRightImage = new Image();
+playerRightImage.src = "Assets/Player/FemalePlayer/runRight.png" // Player Image
+
+const foreGroundImage = new Image();
+foreGroundImage.src = "Assets/Map/Pokemon World ForeGround.png"
 
 const player = new Sprite({
     position: {
         x:canvas.width / 2 - (192 / 6) / 2,
         y:canvas.height / 2 - 40 / 6
     },
-    image: playerImage,
+    image: playerDownImage,
     frames: {
         max: 6
+    },
+    sprites: {
+        up: playerUpImage,
+        down: playerDownImage,
+        left: playerLeftImage,
+        right: playerRightImage
     }
 }) // player Sprite
-
 const background = new Sprite({position: {x: offset.x, y: offset.y}, image: image}); // Map Sprite
-const movables = [background, ...boundaries]
+const foreground = new Sprite({position: {x: offset.x, y: offset.y}, image: foreGroundImage});
+
+const movables = [background, ...boundaries, foreground]
 
 let keys = new LinkedList();
 
 function rectangularCollision({rectangle1, rectangle2}) {
     return (
-        rectangle1.position.x + rectangle1.width * 0.8>= rectangle2.position.x &&
-        rectangle1.position.x + rectangle1.width * 0.2<= rectangle2.position.x + rectangle2.width &&
-        rectangle1.position.y + rectangle1.height *0.6 <= rectangle2.position.y + rectangle2.height &&
+        rectangle1.position.x + rectangle1.width * 0.8 >= rectangle2.position.x &&
+        rectangle1.position.x + rectangle1.width * 0.2 <= rectangle2.position.x + rectangle2.width &&
+        rectangle1.position.y + rectangle1.height * 0.5 <= rectangle2.position.y + rectangle2.height &&
         rectangle1.position.y + rectangle1.height >= rectangle2.position.y
     );
 }
-
-
-
 
 function animate() {
     window.requestAnimationFrame(animate)
@@ -74,10 +87,16 @@ function animate() {
         }
     })
     player.draw();
+    foreground.draw();
+
+    // MOVING AND DIRECTIONAL CODE -------------------------------------------------------------------------------
 
     let moving = true;
+    player.moving = false;
     switch(keys.peek()) {
         case 'w' :
+            player.moving = true;
+            player.image = player.sprites.up;
             for(let i = 0; i < boundaries.length; i++) {
                 const boundary = boundaries[i];
                 if(rectangularCollision({
@@ -100,6 +119,8 @@ function animate() {
         })
         break;
         case 'a' :
+            player.moving = true;
+            player.image = player.sprites.left;
             for(let i = 0; i < boundaries.length; i++) {
                 const boundary = boundaries[i];
                 if(rectangularCollision({
@@ -122,6 +143,8 @@ function animate() {
         })
         break;
         case 's' :
+            player.moving = true;
+            player.image = player.sprites.down;
             for(let i = 0; i < boundaries.length; i++) {
                 const boundary = boundaries[i];
                 if(rectangularCollision({
@@ -144,6 +167,8 @@ function animate() {
         })
         break;
         case 'd' :
+            player.moving = true;
+            player.image = player.sprites.right;
             for(let i = 0; i < boundaries.length; i++) {
                 const boundary = boundaries[i];
                 if(rectangularCollision({
@@ -166,6 +191,8 @@ function animate() {
         })
         break
     } // Player Movement and Speed
+    console.log(player.position.x);
+    console.log(player.position.y);
 }
 animate();
 
