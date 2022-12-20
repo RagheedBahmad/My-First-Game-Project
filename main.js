@@ -1,5 +1,4 @@
 const canvas = document.getElementById("canvas");
-
 const ctx = canvas.getContext("2d");
 
 canvas.width = 1024;
@@ -100,14 +99,15 @@ function rectangularCollision({rectangle1, rectangle2}) {
 }
 
 function animate() {
-    window.requestAnimationFrame(animate)
+    const animationID = window.requestAnimationFrame(animate)
+    console.log(animationID)
     background.draw() //canvas
-    boundaries.forEach((boundary) => { // boundaries
-        boundary.draw();
-        if(rectangularCollision({rectangle1: player, rectangle2: boundary})) {
-            console.log("collision")
-        }
-    }) //Boundaries TEMPORARY
+    // boundaries.forEach((boundary) => { // boundaries
+    //     boundary.draw();
+    //     if(rectangularCollision({rectangle1: player, rectangle2: boundary})) {
+    //         console.log("collision")
+    //     }
+    // }) //Boundaries TEMPORARY
     battleZones.forEach(battleZone => {
         battleZone.draw();
     }) // Battlezones TEMPORARY
@@ -116,8 +116,11 @@ function animate() {
 
     let moving = true;
     player.moving = false;
+    console.log(animationID)
     if(battle.initiated) return
-    // ACTIVATE A BATTLE
+
+    // ACTIVATE A BATTLE---------------------------------------------------------------------------------------------
+
     if(keys.peek() === 'w' || keys.peek() === 'a' || keys.peek() === 's' || keys.peek() === 'd') {
         for(let i = 0; i < battleZones.length; i++) {
             const battleZone = battleZones[i];
@@ -130,10 +133,29 @@ function animate() {
                 rectangle1: player,
                 rectangle2 : battleZone
             }) && overLappingArea > (player.width * player.height) / 2
-                && Math.random() < 0.01
+                && Math.random() < 0.05
             ) {
                 console.log("BATTLE")
+                //deactivate current animation loop
+                window.cancelAnimationFrame(animationID)
                 battle.initiated = true;
+                gsap.to("#battleFlash", {
+                    opacity: 1,
+                    repeat: 4,
+                    yoyo: true,
+                    duration: 0.1,
+
+                    onComplete() {
+                        gsap.to("#battleFlash", {
+                            opacity: 1,
+                            duration: 0.1,
+                        })
+
+                        //activate new animation loop
+
+
+                    }
+                })
                 player.moving = false;
                 break;
             }
@@ -246,6 +268,13 @@ function animate() {
     } // Player Movement and Speed
 }
 animate();
+
+const battleBackgroundImage = new Image();
+
+function animateBattle() {
+    window.requestAnimationFrame(animateBattle)
+    console.log("animating battle")
+}
 
 window.addEventListener("keydown", (e) => {
     switch(e.key) {
