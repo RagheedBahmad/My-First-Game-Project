@@ -18,7 +18,55 @@ const offset = {
     y: -3960
 }
 
+//MONSTERS ++++++++ MONSTERS ++++++++ MONSTERS ++++++++ MONSTERS ++++++++ MONSTERS ++++++++ MONSTERS ++++++++ MONSTERS ++++++++ MONSTERS ++++++++
 
+flameBoyImage = new Image();
+flameBoyImage.src = "Assets/Monsters/Flame Monster.png"
+const flameBoy = new Sprite({
+    position: {
+        x: 600,
+        y: 100
+    },
+    image: flameBoyImage,
+    frames: {
+        max: 6,
+        hold: 10
+    },
+    animate: true,
+    isEnemy: true
+})
+
+grassBoyFrontImage = new Image();
+grassBoyFrontImage.src = "Assets/Monsters/Grass Monster Front.png"
+const grassBoyFront = new Sprite({
+    position: {
+        x: 600,
+        y: 100
+    },
+    image: grassBoyFrontImage,
+    frames: {
+        max: 4,
+        hold: 10
+    },
+    animate: true
+})
+
+grassBoyBackImage = new Image();
+grassBoyBackImage.src = "Assets/Monsters/Grass Monster Back.png"
+const grassBoyBack = new Sprite({
+    position: {
+        x: 250,
+        y: 250
+    },
+    image: grassBoyBackImage,
+    frames: {
+        max: 4,
+        hold: 10
+    },
+    animate: true,
+})
+
+//MONSTERS ++++++++ MONSTERS ++++++++ MONSTERS ++++++++ MONSTERS ++++++++ MONSTERS ++++++++ MONSTERS ++++++++ MONSTERS ++++++++ MONSTERS ++++++++
 const boundaries = []
 collisionsMap.forEach((row, i) => {
     row.forEach((symbol, j) => {
@@ -46,8 +94,6 @@ battleZonesMap.forEach((row, i) => {
         }
     })
 })
-console.log(battleZones);
-
 const image = new Image();
 image.src = "Assets/Map/Pokemon World Map.png"; // Pokemon Map
 
@@ -70,7 +116,8 @@ const player = new Sprite({
     },
     image: playerDownImage,
     frames: {
-        max: 6
+        max: 6,
+        hold: 10
     },
     sprites: {
         up: playerUpImage,
@@ -100,7 +147,6 @@ function rectangularCollision({rectangle1, rectangle2}) {
 
 function animate() {
     const animationID = window.requestAnimationFrame(animate)
-    console.log(animationID)
     background.draw() //canvas
     // boundaries.forEach((boundary) => { // boundaries
     //     boundary.draw();
@@ -115,8 +161,7 @@ function animate() {
     foreground.draw(); //FOREGROUNDS
 
     let moving = true;
-    player.moving = false;
-    console.log(animationID)
+    player.animate = false;
     if(battle.initiated) return
 
     // ACTIVATE A BATTLE---------------------------------------------------------------------------------------------
@@ -135,7 +180,6 @@ function animate() {
             }) && overLappingArea > (player.width * player.height) / 2
                 && Math.random() < 0.05
             ) {
-                console.log("BATTLE")
                 //deactivate current animation loop
                 window.cancelAnimationFrame(animationID)
                 battle.initiated = true;
@@ -149,14 +193,17 @@ function animate() {
                         gsap.to("#battleFlash", {
                             opacity: 1,
                             duration: 0.1,
+                            onComplete() {
+                                animateBattle();
+                                gsap.to("#battleFlash", {
+                                    opacity: 0,
+                                    duration: 0.1,
+                                })
+                            }
                         })
-
-                        //activate new animation loop
-
-
                     }
                 })
-                player.moving = false;
+                player.animate = false;
                 break;
             }
         }
@@ -166,7 +213,7 @@ function animate() {
 
     switch(keys.peek()) {
         case 'w' :
-            player.moving = true;
+            player.animate = true;
             player.image = player.sprites.up;
             for(let i = 0; i < boundaries.length; i++) {
                 const boundary = boundaries[i];
@@ -191,7 +238,7 @@ function animate() {
         })
         break;
         case 'a' :
-            player.moving = true;
+            player.animate = true;
             player.image = player.sprites.left;
             for(let i = 0; i < boundaries.length; i++) {
                 const boundary = boundaries[i];
@@ -216,7 +263,7 @@ function animate() {
         })
         break;
         case 's' :
-            player.moving = true;
+            player.animate = true;
             player.image = player.sprites.down;
             for(let i = 0; i < boundaries.length; i++) {
                 const boundary = boundaries[i];
@@ -241,7 +288,7 @@ function animate() {
         })
         break;
         case 'd' :
-            player.moving = true;
+            player.animate = true;
             player.image = player.sprites.right;
             for(let i = 0; i < boundaries.length; i++) {
                 const boundary = boundaries[i];
@@ -267,14 +314,42 @@ function animate() {
         break
     } // Player Movement and Speed
 }
-animate();
+ animate(); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 const battleBackgroundImage = new Image();
+battleBackgroundImage.src = "Assets/Map/battleGround.png";
+const battleBackground = new Sprite({
+    position: {
+        x: 0,
+        y: -100
+    },
+    image: battleBackgroundImage
+});
 
+//ANIMATE BATTLE ************************************************************************************** ANIMATE BATTLE
+const renderedSprites = [flameBoy, grassBoyBack]
 function animateBattle() {
     window.requestAnimationFrame(animateBattle)
-    console.log("animating battle")
+    battleBackground.draw();
+    flameBoy.draw();
+    grassBoyBack.draw();
+    renderedSprites.forEach((sprite) => {
+        sprite.draw();
+    })
 }
+
+document.querySelectorAll("button").forEach(button => {
+    button.addEventListener("click", (e) => {
+        console.log(attacks[e.currentTarget.innerHTML])
+        const selectedAttack = attacks[e.currentTarget.innerHTML]
+        flameBoy.attack({
+            attack: selectedAttack,
+            recipient: grassBoyBack,
+            renderedSprites
+        })
+    })
+})
+
 
 window.addEventListener("keydown", (e) => {
     switch(e.key) {
