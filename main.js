@@ -84,6 +84,9 @@ const background = new Sprite({position: {x: offset.x, y: offset.y}, image: imag
 const foreground = new Sprite({position: {x: offset.x, y: offset.y}, image: foreGroundImage});
 
 const movables = [background, ...boundaries, foreground, ...battleZones]
+const battle = {
+    initiated: false
+}
 
 let keys = new LinkedList();
 
@@ -92,7 +95,7 @@ function rectangularCollision({rectangle1, rectangle2}) {
         rectangle1.position.x + rectangle1.width * 0.8 >= rectangle2.position.x &&
         rectangle1.position.x + rectangle1.width * 0.2 <= rectangle2.position.x + rectangle2.width &&
         rectangle1.position.y + rectangle1.height * 0.6 <= rectangle2.position.y + rectangle2.height &&
-        rectangle1.position.y + rectangle1.height >= rectangle2.position.y
+        rectangle1.position.y + rectangle1.height * 0.9 >= rectangle2.position.y
     );
 }
 
@@ -111,6 +114,10 @@ function animate() {
     player.draw(); //PLAYER
     foreground.draw(); //FOREGROUNDS
 
+    let moving = true;
+    player.moving = false;
+    if(battle.initiated) return
+    // ACTIVATE A BATTLE
     if(keys.peek() === 'w' || keys.peek() === 'a' || keys.peek() === 's' || keys.peek() === 'd') {
         for(let i = 0; i < battleZones.length; i++) {
             const battleZone = battleZones[i];
@@ -125,7 +132,9 @@ function animate() {
             }) && overLappingArea > (player.width * player.height) / 2
                 && Math.random() < 0.01
             ) {
-                console.log("Battle Zone Collision")
+                console.log("BATTLE")
+                battle.initiated = true;
+                player.moving = false;
                 break;
             }
         }
@@ -133,8 +142,6 @@ function animate() {
 
     // MOVING AND DIRECTIONAL CODE -------------------------------------------------------------------------------
 
-    let moving = true;
-    player.moving = false;
     switch(keys.peek()) {
         case 'w' :
             player.moving = true;
@@ -147,7 +154,7 @@ function animate() {
                         ...boundary,
                         position: {
                             x: boundary.position.x,
-                            y: boundary.position.y + 10
+                            y: boundary.position.y + 5
                         }
                     }
                 })) {
@@ -158,7 +165,7 @@ function animate() {
 
             if(moving)
                 movables.forEach((movable) => {
-                movable.position.y += 10;
+                movable.position.y += 5;
         })
         break;
         case 'a' :
@@ -171,7 +178,7 @@ function animate() {
                     rectangle2 :{
                         ...boundary,
                         position: {
-                            x: boundary.position.x + 10,
+                            x: boundary.position.x + 5,
                             y: boundary.position.y
                         }
                     }
@@ -183,7 +190,7 @@ function animate() {
 
             if(moving)
                 movables.forEach((movable) => {
-                movable.position.x += 10;
+                movable.position.x += 5;
         })
         break;
         case 's' :
@@ -197,7 +204,7 @@ function animate() {
                         ...boundary,
                         position: {
                             x: boundary.position.x,
-                            y: boundary.position.y - 10
+                            y: boundary.position.y - 5
                         }
                     }
                 })) {
@@ -208,7 +215,7 @@ function animate() {
 
             if(moving)
                 movables.forEach((movable) => {
-                movable.position.y -= 10;
+                movable.position.y -= 5;
         })
         break;
         case 'd' :
@@ -221,7 +228,7 @@ function animate() {
                     rectangle2 :{
                         ...boundary,
                         position: {
-                            x: boundary.position.x - 10,
+                            x: boundary.position.x - 5,
                             y: boundary.position.y
                         }
                     }
@@ -233,7 +240,7 @@ function animate() {
 
             if(moving)
                 movables.forEach((movable) => {
-                movable.position.x -= 10;
+                movable.position.x -= 5;
         })
         break
     } // Player Movement and Speed
