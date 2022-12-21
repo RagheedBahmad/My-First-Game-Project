@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <title>Rag's game</title>
     <link rel="icon" type="image/x-icon" href="Assets/Favicon/favicon-32x32.png">
@@ -10,75 +12,90 @@
     * {
         font-family: 'Press Start 2P', cursive;
     }
+
     body {
         margin: 0;
         background-color: black;
     }
+
     h1 {
         margin: 0
     }
+
     button {
         border: 0;
-        cursor:pointer;
+        cursor: pointer;
         font-size: 16px;
     }
+
     button:hover {
         background-color: #ddd
     }
 </style>
 <body>
-<div style = "display: inline-block; position: relative;">
-    <div id = "battleFlash"
+<div style="display: inline-block; position: relative;">
+    <div id="battleFlash"
          style="background-color: black;
         position: absolute;
         top: 0; left: 0; right: 0; bottom: 0; opacity: 0;
-        pointer-events: none">
+        pointer-events: none;
+        z-index: 10">
     </div>
 
 
-    <!-- ENEMY HEALTH BAR  -->
+    <canvas id="canvas"></canvas>
 
-    <div style = "background-color: white; width: 250px; position: absolute; top: 50px; left: 200px; border: 4px black solid; padding: 12px">
-        <h1 style = "font-size: 16px">Flame Boy</h1>
-        <div style = "position: relative;">
-            <div style = "height: 15px; background-color: #bbb; margin-top: 10px"></div>
-            <div Id = "enemyHealthBar" style = "height: 15px; background-color: green; position: absolute; top: 0; left: 0; right: 0"></div>
+    <div Id="UI" style = "display: none">
+        <!-- ENEMY HEALTH BAR  -->
+
+        <div style="background-color: white; width: 250px; position: absolute; top: 50px; left: 200px; border: 4px black solid; padding: 12px">
+            <h1 style="font-size: 16px">Flame Boy</h1>
+            <div style="position: relative;">
+                <div style="height: 15px; background-color: #bbb; margin-top: 10px"></div>
+                <div Id="enemyHealthBar"
+                     style="height: 15px; background-color: green; position: absolute; top: 0; left: 0; right: 0"></div>
+            </div>
         </div>
-    </div>
 
 
-    <!-- PLAYER HEALTH BAR  -->
+        <!-- PLAYER HEALTH BAR  -->
 
-    <div style = "background-color: white; width: 250px; position: absolute; top: 350px; right: 50px; border: 4px black solid; padding: 12px">
-        <h1 style = "font-size: 16px">Grass Boy</h1>
-        <div style = "position: relative;">
-            <div style = "height: 15px; background-color: #bbb; margin-top: 10px"></div>
-            <div Id = "playerHealthBar" style = "height: 15px; background-color: green; position: absolute; top: 0; left: 0; right: 0"></div>
+        <div style="background-color: white; width: 250px; position: absolute; top: 350px; right: 50px; border: 4px black solid; padding: 12px">
+            <h1 style="font-size: 16px">Grass Boy</h1>
+            <div style="position: relative;">
+                <div style="height: 15px; background-color: #bbb; margin-top: 10px"></div>
+                <div Id="playerHealthBar"
+                     style="height: 15px; background-color: green; position: absolute; top: 0; left: 0; right: 0"></div>
+            </div>
         </div>
-    </div>
+        <div style="background-color: white; height: 100px; position: absolute; bottom: 0; left: 0; right: 0; border-top : 4px black solid; display: flex">
+            <div Id="dialogueBox"
+                 style="position: absolute; top: 0; bottom: 0; left: 0; right: 0; background-color: white; padding: 12px; display: none; cursor: pointer"></div>
+            <div Id="attacksBox" style="width: 66.66%; display: grid; grid-template-columns: repeat(2, 1fr)">
 
-
-    <canvas id = "canvas"></canvas>
-
-    <div style = "background-color: white; height: 100px; position: absolute; bottom: 0; left: 0; right: 0; border-top : 4px black solid; display: flex">
-        <div style = "width: 66.66%; display: grid; grid-template-columns: repeat(2, 1fr)">
-            <button>Tackle</button>
-            <button>Vine Whip</button>
-            <button>Attack3</button>
-            <button>Attack4</button>
-        </div>
-        <div style = "display: flex; align-items: center; justify-content: center; width: 33.33%; border-left: 4px black solid">
-            <h1 style = "font-size: 16px">Attack Type</h1>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: center; width: 33.33%; border-left: 4px black solid">
+                <h1 Id="attackType" style="font-size: 16px">Attack Type</h1>
+            </div>
         </div>
     </div>
 </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src = "Boundary.js"></script>
-    <script src = "attacks.js"></script>
-    <script src = "data/BattleGround.js"></script>
-    <script src = "data/collisions.js"></script>
-    <script src = "LinkedList.js"></script>
-    <script src = "Sprite.js"></script>
-    <script src = "main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"
+        integrity="sha512-6+YN/9o9BWrk6wSfGxQGpt3EUK6XeHi6yeHV+TYD2GR0Sj/cggRpXr1BrAQf0as6XslxomMUxXp2vIl+fv0QRA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"
+        integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="Boundary.js"></script>
+<script src="data/audio.js"></script>
+<script src="data/attacks.js"></script>
+<script src="data/monsters.js"></script>
+<script src="data/BattleGround.js"></script>
+<script src="data/collisions.js"></script>
+<script src="LinkedList.js"></script>
+<script src="Sprite.js"></script>
+<script src="Monster.js"></script>
+<script src="main.js"></script>
+<script src="battle.js"></script>
 </body>
 </html>

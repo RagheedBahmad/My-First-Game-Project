@@ -1,5 +1,5 @@
 class Sprite {
-    constructor({ position, image, frames = {max: 1, hold: 10} , sprites, animate = false, isEnemy = false, rotation = 0}) {
+    constructor({ position, image, frames = {max: 1, hold: 10} , sprites, animate = false, rotation = 0}) {
         this.position = position;
         this.image = image;
         this.frames = {...frames, val: 0, elapsed: 0};
@@ -9,9 +9,9 @@ class Sprite {
         this.sprites = sprites;
         this.animate = animate;
         this.opacity = 1;
-        this.health = 100;
-        this.isEnemy = isEnemy;
         this.rotation = rotation;
+
+
     }
 
     draw() {
@@ -48,92 +48,5 @@ class Sprite {
             }
         }
     }
-
-    attack({attack, recipient, renderedSprites}) {
-        let healthBar = this.isEnemy ? "#playerHealthBar" : "#enemyHealthBar"
-        this.health -= attack.damage
-        let rotation = this.isEnemy ? -2.4 : 1
-
-        switch(attack.name) {
-            case "Tackle" :
-                const tl = gsap.timeline()
-                let movementDistance = 10;
-                if (this.isEnemy) movementDistance = -10
-                tl.to(this.position, {
-                    x: this.position.x - movementDistance
-                }).to(this.position, {
-                    x: this.position.x + movementDistance,
-                    duration: 0.1,
-                    onComplete: () => {
-                        //ENEMY GETS HIT
-                        gsap.to(healthBar, {
-                            width: this.health + "%"
-                        })
-                        gsap.to(recipient.position, {
-                            x: recipient.position.x + 10,
-                            yoyo: true,
-                            repeat: 3,
-                            duration: 0.08,
-                        })
-
-                        gsap.to(recipient, {
-                            opacity: 0.4,
-                            repeat: 3,
-                            yoyo: true,
-                            duration: 0.08
-                        })
-                    }
-                }).to(this.position, {
-                    x: this.position.x
-                })
-                break;
-
-            case "VineWhip" :
-                break;
-
-            case "Vine Whip" :
-                const fireballImage = new Image();
-                fireballImage.src = "Assets/Attack Sprites/fireball.png"
-                const fireball = new Sprite({
-                    position: {
-                        x: this.position.x + 50,
-                        y: this.position.y + 50
-                    },
-                    image: fireballImage,
-                    frames: {
-                        max: 4,
-                        hold: 10
-                    },
-                    animate: true,
-                    rotation
-                })
-                renderedSprites.splice(1, 0, fireball)
-
-                gsap.to(fireball.position, {
-                    x: recipient.position.x + 25,
-                    y: recipient.position.y + 50,
-                    onComplete: () => {
-                        //ENEMY GETS HIT
-                        gsap.to(healthBar, {
-                            width: this.health + "%"
-                        })
-                        gsap.to(recipient.position, {
-                            x: recipient.position.x + 10,
-                            yoyo: true,
-                            repeat: 3,
-                            duration: 0.08,
-                        })
-
-                        gsap.to(recipient, {
-                            opacity: 0.4,
-                            repeat: 3,
-                            yoyo: true,
-                            duration: 0.08
-                        })
-                        renderedSprites.splice(1, 1)
-                    }
-                })
-        }
-        }
 }
 
